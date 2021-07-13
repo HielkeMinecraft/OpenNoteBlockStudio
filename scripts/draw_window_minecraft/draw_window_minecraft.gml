@@ -1,20 +1,21 @@
 function draw_window_minecraft() {
 	// draw_window_minecraft()
 	var x1, y1, a, b, c, stabx, stabw, str, nsel;
+	if (theme = 3) draw_set_alpha(windowalpha)
 	curs = cr_default
 	x1 = floor(rw / 2 - 245)
 	y1 = floor(rh / 2 - 225)
 	draw_window(x1, y1, x1 + 490, y1 + 450)
 	if (theme = 3){
 	draw_set_color(13421772)
-	draw_rectangle(x1+1,y1+1,x1+488,y1+98,0)
+	if (fdark) draw_set_color(3355443)
+	draw_roundrect(x1+1,y1+1,x1+488,y1+98,0)
 	draw_set_color(c_black)
+	draw_theme_color()
 	}
-	draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+	draw_theme_font(font_main_bold)
 	draw_text(x1 + 8, y1 + 8, "Minecraft Compatibility")
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	draw_text(x1 + 16, y1 + 32, "Due to the limitations of note blocks, the song must meet certain criteria in order\nto be properly imported into Minecraft.")
 
 	yy = y1 + 50
@@ -31,9 +32,9 @@ function draw_window_minecraft() {
 	        stabx = b - 2
 	        stabw = string_width(str[a]) + 15
 	    } else {
-	        draw_sprite(spr_tabbuttons, 0 + 3 * c + 6 * theme, x1 + b, yy + 28)
-	        draw_sprite_ext(spr_tabbuttons, 1 + 3 * c + 6 * theme, x1 + b + 2, yy + 28, string_width(str[a]) / 2 + 4, 1, 0, -1, 1)
-	        draw_sprite(spr_tabbuttons, 2 + 3 * c + 6 * theme, x1 + b + string_width(str[a]) + 10, yy + 28)
+	        draw_sprite(spr_tabbuttons, 0 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b, yy + 28)
+	        draw_sprite_ext(spr_tabbuttons, 1 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b + 2, yy + 28, string_width(str[a]) / 2 + 4, 1, 0, -1, 1)
+	        draw_sprite(spr_tabbuttons, 2 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b + string_width(str[a]) + 10, yy + 28)
 	        draw_text(x1 + b + 6, yy + 30, str[a])
 	    }
 	    if (mouse_check_button_pressed(mb_left) && c) nsel = a
@@ -45,6 +46,8 @@ function draw_window_minecraft() {
 	    draw_set_color(make_color_rgb(137, 140, 149))
 	    if (theme != 3) draw_rectangle(x1 + 6, yy + 46, x1 + 484, yy + 350, 1)
 	    draw_set_color(c_white)
+		if (theme = 3) draw_set_color(15987699)
+		if (theme = 3 && fdark) draw_set_color(2105376)
 		if (theme != 3) {
 		draw_rectangle(x1 + stabx, yy + 26, x1 + stabx + stabw, yy + 26 + 20, 0)
 		} else {
@@ -53,6 +56,8 @@ function draw_window_minecraft() {
 	    draw_set_color(make_color_rgb(137, 140, 149))
 	    if (theme != 3) draw_rectangle(x1 + stabx, yy + 26, x1 + stabx + stabw, yy + 26 + 20, 1)
 	    draw_set_color(c_white)
+		if (theme = 3) draw_set_color(15987699)
+		if (theme = 3 && fdark) draw_set_color(2105376)
 	    draw_rectangle(x1 + stabx + 1, yy + 46, x1 + stabx + stabw - 1, yy + 47, 0)
 	    draw_theme_color()
 	    draw_text(x1 + stabx + 8, yy + 28, str[selected_tab_mc])
@@ -90,22 +95,20 @@ function draw_window_minecraft() {
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 1, x1 + 25, yy + 8)
 			} else {
-			draw_sprite(spr_yesno_f, 1, x1 + 25, yy + 8)
+			draw_sprite(spr_yesno_f, 1 + 3 * fdark, x1 + 25, yy + 8)
 			}
 		} else {
 			// not compatible
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 0, x1 + 25, yy + 8)
 			} else {
-			draw_sprite(spr_yesno_f, 0, x1 + 25, yy + 8)
+			draw_sprite(spr_yesno_f, 0 + 3 * fdark, x1 + 25, yy + 8)
 			}
 		}
 
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "The tempo must be either 2.5, 5 or 10 ticks per second.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 
 		if (tempo = 10 || tempo = 5 || tempo = 2.5) {    
 			draw_set_color(c_green)
@@ -114,7 +117,7 @@ function draw_window_minecraft() {
 		} else {
 			draw_set_color(c_red)
 		    draw_text(x1 + 45, yy + 16, "The tempo is " + string(tempo) + " ticks per second.")
-		    if (draw_button2(x1 + 45, yy + 34, 140, "Fix tempo for schematic")) {
+		    if (draw_button2(x1 + 45, yy + 34, 140, "Fix tempo for schematic", 0, 1)) {
 		        var otempo = tempo
 		        if (otempo > 10) tempo = 10
 		        if (otempo < 10) tempo = 10
@@ -128,13 +131,11 @@ function draw_window_minecraft() {
 		if (theme != 3) {
 		draw_sprite(spr_yesno, block_outside = 0, x1 + 25, yy + 8)
 		} else {
-		draw_sprite(spr_yesno_f, block_outside = 0, x1 + 25, yy + 8)
+		draw_sprite(spr_yesno_f, (block_outside = 0) + 3 * fdark, x1 + 25, yy + 8)
 		}
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "All blocks must be within Minecraft's 2 octave range.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		if (block_outside > 0) {    
 		    draw_set_color(c_red)
 		    if (block_outside = 1) {
@@ -142,15 +143,15 @@ function draw_window_minecraft() {
 		    } else {
 		        draw_text(x1 + 45, yy + 16, "There are " + string(block_outside) + " blocks outside the 2 octave range.")
 		    }
-		    if (draw_button2(x1 + 45, yy + 34, 120, "Select lower blocks")) {
+		    if (draw_button2(x1 + 45, yy + 34, 120, "Select lower blocks", 0, 1)) {
 		        select_outside(true, false)
-		        window = 0
+		        windowclose = 1
 		    }
-			if (draw_button2(x1 + 175, yy + 34, 120, "Select higher blocks")) {
+			if (draw_button2(x1 + 175, yy + 34, 120, "Select higher blocks", 0, 1)) {
 		        select_outside(false, true)
-		        window = 0
+		        windowclose = 1
 		    }
-		    if (draw_button2(x1 + 305, yy + 34, 100, "Transpose notes")) {
+		    if (draw_button2(x1 + 305, yy + 34, 100, "Transpose notes", 0, 1)) {
 		        if (question("Transpose notes so that they fall within Minecraft's 2 octaves?", "Transpose notes")) {
 		            select_all(-1, 0)
 		            selection_transpose()
@@ -168,20 +169,18 @@ function draw_window_minecraft() {
 		if (theme != 3) {
 		draw_sprite(spr_yesno, block_custom = 0, x1 + 25, yy + 8)
 		} else {
-		draw_sprite(spr_yesno_f, block_custom = 0, x1 + 25, yy + 8)
+		draw_sprite(spr_yesno_f, (block_custom = 0) + 3 * fdark, x1 + 25, yy + 8)
 		}
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "No custom instruments must be used.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		if (block_custom > 0) {    
 		    draw_set_color(c_red)
 		    if (block_custom = 1) draw_text(x1 + 45, yy + 16, "There is 1 block with custom instruments.")
 		    else draw_text(x1 + 45, yy + 16, "There are " + string(block_custom) + " blocks with custom instruments.")
-		    if (draw_button2(x1 + 45, yy + 34, 160, "Select affected blocks")) {
+		    if (draw_button2(x1 + 45, yy + 34, 160, "Select affected blocks", 0, 1)) {
 		        select_custom()
-		        window = 0
+		        windowclose = 1
 		    }
 		} else {
 		    draw_set_color(c_green)
@@ -191,18 +190,16 @@ function draw_window_minecraft() {
 		draw_theme_color()
 	
 	} else { // Datapack
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "Any tempo works when exporting as a data pack.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		draw_text(x1 + 45, yy + 16, "However, the tempos 0.25, 0.5, 1, 1.25, 2, 2.5, 4, 5, 10 and 20 t/s work better.")
 
 		if (tempo = 20 || tempo = 10 || tempo = 5 || tempo = 4 || tempo = 2.5 || tempo = 2 || tempo = 1.25 || tempo = 1 || tempo = 0.5 || tempo = 0.25) {    
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 1, x1 + 25, yy + 8)	
 			} else {
-			draw_sprite(spr_yesno_f, 1, x1 + 25, yy + 8)	
+			draw_sprite(spr_yesno_f, 1 + 3 * fdark, x1 + 25, yy + 8)	
 			}
 			draw_set_color(c_green)
 			if (theme == 2) draw_set_color(c_lime)
@@ -211,11 +208,11 @@ function draw_window_minecraft() {
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 2, x1 + 25, yy + 8)	
 			} else {
-			draw_sprite(spr_yesno_f, 2, x1 + 25, yy + 8)	
+			draw_sprite(spr_yesno_f, 2 + 3 * fdark, x1 + 25, yy + 8)	
 			}
 		    draw_set_color(c_orange)
 		    draw_text(x1 + 45, yy + 32, "The tempo is " + string(tempo) + " ticks per second.")
-			if (draw_button2(x1 + 45, yy + 50, 180, "Optimize tempo for data pack")) {
+			if (draw_button2(x1 + 45, yy + 50, 180, "Optimize tempo for data pack", 0, 1)) {
 			    var otempo
 				otempo = tempo
 				if (otempo >= 15) tempo = 20
@@ -233,17 +230,15 @@ function draw_window_minecraft() {
 		draw_theme_color()
 
 		yy += 90
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "Using a resource pack, you may extend the supported range to 6 octaves.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_small)
 		draw_text(x1 + 45, yy + 16, "To play without one, all blocks must be within Minecraft's 2 octave range.")	
 		if (block_outside > 0) {
 		if (theme != 3) {
 		draw_sprite(spr_yesno, 2, x1 + 25, yy + 8)
 		} else {
-		draw_sprite(spr_yesno_f, 2, x1 + 25, yy + 8)
+		draw_sprite(spr_yesno_f, 2 + 3 * fdark, x1 + 25, yy + 8)
 		}
 		    draw_set_color(c_orange)
 		    if (block_outside = 1) {
@@ -251,15 +246,15 @@ function draw_window_minecraft() {
 		    } else {
 		        draw_text(x1 + 45, yy + 32, "There are " + string(block_outside) + " blocks outside the 2 octave range.")
 		    }
-		    if (draw_button2(x1 + 45, yy + 50, 120, "Select lower blocks")) {
+		    if (draw_button2(x1 + 45, yy + 50, 120, "Select lower blocks", 0, 1)) {
 		        select_outside(true, false)
-		        window = 0
+		        windowclose = 1
 		    }
-			if (draw_button2(x1 + 175, yy + 50, 120, "Select higher blocks")) {
+			if (draw_button2(x1 + 175, yy + 50, 120, "Select higher blocks", 0, 1)) {
 		        select_outside(false, true)
-		        window = 0
+		        windowclose = 1
 		    }
-		    if (draw_button2(x1 + 305, yy + 50, 100, "Transpose notes")) {
+		    if (draw_button2(x1 + 305, yy + 50, 100, "Transpose notes", 0, 1)) {
 		        if (question("Transpose notes so that they fall within Minecraft's 2 octaves?", "Transpose notes")) {
 		            select_all(-1, 0)
 		            selection_transpose()
@@ -270,7 +265,7 @@ function draw_window_minecraft() {
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 1, x1 + 25, yy + 8)
 			} else {
-			draw_sprite(spr_yesno_f, 1, x1 + 25, yy + 8)
+			draw_sprite(spr_yesno_f, 1 + 3 * fdark, x1 + 25, yy + 8)
 			}
 		    draw_set_color(c_green)
 			if (theme == 2) draw_set_color(c_lime)
@@ -279,30 +274,28 @@ function draw_window_minecraft() {
 		draw_theme_color()
 
 		yy += 90
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + 45, yy, "Using a resource pack, you may play custom instruments in Minecraft.")
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		draw_text(x1 + 45, yy + 16, "To play without one, no custom instruments must be used.")
 		if (block_custom > 0) {
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 2, x1 + 25, yy + 8)
 			} else {
-			draw_sprite(spr_yesno_f, 2, x1 + 25, yy + 8)
+			draw_sprite(spr_yesno_f, 2 + 3 * fdark, x1 + 25, yy + 8)
 			}
 		    draw_set_color(c_orange)
 		    if (block_custom = 1) draw_text(x1 + 45, yy + 32, "There is 1 block with custom instruments.")
 		    else draw_text(x1 + 45, yy + 32, "There are " + string(block_custom) + " blocks with custom instruments.")
-			if (draw_button2(x1 + 45, yy + 50, 160, "Select affected blocks")) {
+			if (draw_button2(x1 + 45, yy + 50, 160, "Select affected blocks", 0, 1)) {
 		        select_custom()
-		        window = 0
+		        windowclose = 1
 		    }
 		} else {
 			if (theme != 3) {
 			draw_sprite(spr_yesno, 1, x1 + 25, yy + 8)
 			} else {
-			draw_sprite(spr_yesno_f, 1, x1 + 25, yy + 8)
+			draw_sprite(spr_yesno_f, 1 + 3 * fdark, x1 + 25, yy + 8)
 			}
 		    draw_set_color(c_green)
 			if (theme == 2) draw_set_color(c_lime)
@@ -310,10 +303,47 @@ function draw_window_minecraft() {
 		}
 		draw_theme_color()
 	}
-
-	if (draw_button2(x1 + 240 - 36, y1 + 413, 72, "OK")) window = 0
+	
+	if (draw_button2(x1 + 240 - 36, y1 + 413, 72, "OK") && windowopen = 1) windowclose = 1
 	window_set_cursor(cr_default)
-
+	if (windowopen = 0 && theme = 3) {
+		if (windowalpha < 1) {
+			if (refreshrate = 0) windowalpha += 1/3.75
+			else if (refreshrate = 1) windowalpha += 1/7.5
+			else if (refreshrate = 2) windowalpha += 1/15
+			else if (refreshrate = 3) windowalpha += 1/18
+			else windowalpha += 1/20
+		} else {
+			windowalpha = 1
+			windowopen = 1
+		}
+	}
+	if(theme = 3) {
+		if (windowclose = 1) {
+			if (windowalpha > 0) {
+				if (refreshrate = 0) windowalpha -= 1/3.75
+				else if (refreshrate = 1) windowalpha -= 1/7.5
+				else if (refreshrate = 2) windowalpha -= 1/15
+				else if (refreshrate = 3) windowalpha -= 1/18
+				else windowalpha -= 1/20
+			} else {
+				windowalpha = 0
+				windowclose = 0
+				windowopen = 0
+				window = 0
+				window_set_cursor(curs)
+				save_settings()
+				selected_tab_mc = 0
+			}
+		}
+	} else {
+		if (windowclose = 1) {
+			windowclose = 0
+			window = 0
+			selected_tab_mc = 0
+		}
+	}
+	draw_set_alpha(1)
 
 
 }

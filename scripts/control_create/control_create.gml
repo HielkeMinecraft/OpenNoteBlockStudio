@@ -11,6 +11,7 @@ function control_create() {
 	lib_init()
 
 	// Window
+	#macro RUN_FROM_IDE parameter_count()==3&&string_count("GMS2TEMP",parameter_string(2))
 	window_width = 0
 	window_height = 0
 	window_maximize()
@@ -24,9 +25,18 @@ function control_create() {
 	prev_scale = -1
 	rw = 0
 	rh = 0
+	windowalpha = 0
+	windowopen = 0
+	windowclose = 0
+	windowsound = 0
+	msgalpha = 1
+	showmsg = 0
+	msgcontent = ""
+	msgstart = 0
 
 	// Audio
 	channels = 256
+	channelstoggle = 0
 	sounds = 0
 	audio_channel_num(channels)
 	show_soundcount = 0
@@ -37,6 +47,7 @@ function control_create() {
 	show_welcome = 1
 	scroll_wheel = 0
 	theme = 0
+	fdark = 0
 	blackout = 0
 	editmode = 0
 	clickinarea = 0
@@ -55,6 +66,8 @@ function control_create() {
 	tonextsave = 0
 	backupmins = 1
 	tonextbackup = 0
+	presence = 1
+	presencewindow = 0
 
 	// File
 	filename = ""
@@ -263,6 +276,11 @@ function control_create() {
 	loopstart = 0
 	looptobarend = 1
 	timestoloop = loopmax
+	taptempo = 0
+	tapping = 0
+	ltime = 0
+	taps = 0
+	tapdouble = 0
 
 	// Midi export / import
 	w_midi_remember = 1
@@ -309,6 +327,23 @@ function control_create() {
 	ds_list_add(instrument_list, new_instrument("Bit",           "bit.ogg", false, true))
 	ds_list_add(instrument_list, new_instrument("Banjo",         "banjo.ogg", false, true))
 	ds_list_add(instrument_list, new_instrument("Pling",         "pling.ogg", false, true))
+	
+	soundinvoke = create(obj_instrument)
+	soundinvoke.key = 45
+	soundinvoke.filename = "invoke.ogg"
+	soundinvoke.user = 0
+	soundshow =   create(obj_instrument)
+	soundshow.key =   45
+	soundshow.filename =     "show.ogg"
+	soundshow.user =   0
+	soundhide =   create(obj_instrument)
+	soundhide.key =   45
+	soundhide.filename =     "hide.ogg"
+	soundhide.user =   0
+	soundgoback = create(obj_instrument)
+	soundgoback.key = 45
+	soundgoback.filename = "goback.ogg"
+	soundgoback.user = 0
 
 	instrument = instrument_list[| 0]
 	insbox_start = 0

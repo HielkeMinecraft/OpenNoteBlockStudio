@@ -14,6 +14,9 @@ function control_draw() {
 	}
 	prev_scale = window_scale
 	
+	if (channelstoggle) channels = 32768
+	else channels = 256
+	
 	curs = cr_default
 	showmenu = 0
 	cursmarker = 0
@@ -22,8 +25,7 @@ function control_draw() {
 	// Performance indicator: "(" + string_format(currspeed * 100, 1, 0) + "%) "
 	draw_set_alpha(1)
 	draw_theme_color()
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	editline += 1
 	if refreshrate = 1 game_set_speed(60,gamespeed_fps)
 	if refreshrate = 2 game_set_speed(120,gamespeed_fps)
@@ -95,11 +97,13 @@ function control_draw() {
 	if (theme = 0) window_background = 15790320
 	if (theme = 1) window_background = 13160660
 	if (theme = 2) window_background = c_dark
-	if (theme = 3) window_background = c_white
+	// if (theme = 3) window_background = c_white
+	if (theme = 3) window_background = 15987699
+	if (theme = 3 && fdark) window_background = 2105376
 	draw_clear(window_background)
 
 	iconcolor = c_black
-	if (theme = 2) iconcolor = c_white
+	if (theme = 2 || (fdark && theme = 3)) iconcolor = c_white
 
 	// Calculate area
 	if (!fullscreen && show_layers) {
@@ -270,6 +274,11 @@ function control_draw() {
 		draw_set_color(c_black)
 		draw_rectangle(x1 + 2, y1 + 34, x1 + 2 + 32 * totalcols, y1 + 34 + 32 * totalrows, false)
 	}
+	if (theme = 3 && !blackout) {
+		draw_set_color(16382457)
+		if (fdark) draw_set_color(2565927)
+		draw_rectangle(x1 + 2, y1 + 34, x1 + 2 + 32 * totalcols, y1 + 34 + 32 * totalrows, false)
+	}
 	for (a = 0; a < totalcols; a += 1) {
 		if (!blackout) {
 			if ((starta + a) mod (timesignature * 4) == 0) {
@@ -355,6 +364,7 @@ function control_draw() {
 		                }
 		                if (a) {
 		                    if (song_ins[xx, b].loaded) play_sound(song_ins[xx, b], song_key[xx, b], c , d, e)
+							if (instrument_list[| ds_list_find_index(instrument_list, song_ins[xx, b])].name = "Tempo Changer") tempo = floor(abs(e)) / 15
 		                    if (song_ins[xx, b].press) key_played[song_key[xx, b]] = current_time
 		                    song_played[xx, b] = current_time
 		                }
@@ -491,7 +501,8 @@ function control_draw() {
 											"Ctrl+Shift+Y$Set pitch...|"+
 											"Ctrl+Shift+U$Reset all properties|"+
 											"/|-|"+
-	                                        inactive(selected = 0) + "Transpose notes outside octave range")
+	                                        inactive(selected = 0) + "Transpose notes outside octave range|-|"+
+											"Ctrl+Shift+I$Tempo tapper")
 	            menu.menuc = selbx
 	            menu.pastex = selbx
 	            menu.pastey = selby
@@ -522,8 +533,12 @@ function control_draw() {
 	            if (keyboard_check_pressed(ord("F"))) mode_action(4)
 	            if ((editmode != m_key) && (keyboard_check_pressed(ord("T")))) mode_action(5)
 	            if ((editmode != m_key) && (keyboard_check_pressed(ord("G")))) mode_action(6)
+	            if (keyboard_check_pressed(ord("P"))) window = w_preferences
 	        }
-	        if (keyboard_check_pressed(vk_delete) && selected > 0) selection_delete(0)
+	        if (keyboard_check_pressed(vk_delete) && selected > 0) {
+				selection_delete(0)
+				changed = 1
+			}
 	        if (sb_sel = 0) {
 	            if (keyboard_check_pressed(vk_home)) starta = 0
 	            if (keyboard_check_pressed(vk_end)) starta = enda
@@ -578,6 +593,10 @@ function control_draw() {
 			if (keyboard_check_pressed(ord("P"))&& keyboard_check(vk_shift)) {
 				playing = 0 
 				window = w_clip_editor
+				}
+			if (keyboard_check_pressed(ord("I"))&& keyboard_check(vk_shift)) {
+				playing = 0 
+				window = w_tempotapper
 				}
 			// Macro Hotkeys
 			if selected != 0 {
@@ -644,6 +663,29 @@ function control_draw() {
 			}
 		}
 	}
+	if (keyboard_check_pressed(vk_f7)) {
+	    if (refreshrate = 0){
+			game_set_speed(60,gamespeed_fps)
+			refreshrate = 1
+			set_msg("FPS => 60")
+		} else if (refreshrate = 1) {
+			game_set_speed(120,gamespeed_fps)
+			refreshrate = 2
+			set_msg("FPS => 120")
+		} else if (refreshrate = 2) {
+			game_set_speed(144,gamespeed_fps)
+			refreshrate = 3
+			set_msg("FPS => 144")
+		} else if (refreshrate = 3) {
+			game_set_speed(114514,gamespeed_fps)
+			refreshrate = 4
+			set_msg("FPS => Unlimited")
+		} else if (refreshrate = 4) {
+			game_set_speed(30,gamespeed_fps)
+			refreshrate = 0
+			set_msg("FPS => 30")
+		}
+	}
 	// Selecting note blocks
 	if (select > 0) {
 	    curs = cr_handpoint
@@ -652,8 +694,13 @@ function control_draw() {
 	    y2 = mouse_y
 	    if (starta = 0) x2 = max(x1 + 2, mouse_x)
 	    if (startb = 0) y2 = max(y1 + 34, mouse_y)
-	    draw_set_color(c_blue)
-	    if (select = 2) draw_set_color(c_red)
+		if (theme != 3) {
+			draw_set_color(c_blue)
+			if (select = 2) draw_set_color(c_red)
+		} else {
+			draw_set_color(14120960)
+			if (select = 2) draw_set_color(c_red)
+		}
 	    draw_set_alpha(0.25)
 	    draw_rectangle(select_pressx, select_pressy, x2, y2, 0)
 	    draw_set_alpha(1)
@@ -662,9 +709,8 @@ function control_draw() {
 	}
 
 	// Timeline and markers
-	draw_sprite_ext(spr_timeline, (0 + theme = 2) * !blackout + blackout * 2, x1 + 2, y1 + 2, totalcols * 32 + 20, 1, 0, -1, 1)
-	draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
+	draw_sprite_ext(spr_timeline, (0 + theme = 2 + (fdark && theme = 3)) * !blackout + blackout * 2, x1 + 2, y1 + 2, totalcols * 32 + 20, 1, 0, -1, 1)
+	draw_theme_font(font_small)
 	draw_set_halign(fa_left)
 	draw_theme_color()
 	if (blackout) draw_set_color(c_white)
@@ -776,22 +822,26 @@ function control_draw() {
 	    a = starta
 	    b = startb
 	    if (mouse_x > x1 + 2 + 32 * totalcols - 32) {
-	        dragincxr += 0.1
+	        if (refreshrate >= 2) dragincxr += 0.025
+	        else dragincxr += 0.1
 	        dragincxr = min(dragincxr, 4)
 	        starta += ceil(dragincxr)
 	    } else dragincxr = 0
 	    if (mouse_x < x1 + 32) {
-	        dragincxl += 0.1
+	        if (refreshrate >= 2) dragincxl += 0.025
+	        else dragincxl += 0.1
 	        dragincxl = min(dragincxl, 4)
 	        starta -= ceil(dragincxl)
 	    } else dragincxl = 0
 	    if (mouse_y > y1 + 34 + totalrows * 32) {
-	        dragincyd += 0.1
+	        if (refreshrate >= 2) dragincyd += 0.025
+	        else dragincyd += 0.1
 	        dragincyd = min(dragincyd, 4)
 	        startb += ceil(dragincyd)
 	    } else dragincyd = 0
 	    if (mouse_y < y1 + 34 + 32) {
-	        dragincyu += 0.1
+	        if (refreshrate >= 2) dragincyu += 0.025
+	        else dragincyu += 0.1
 	        dragincyu = min(dragincyu, 4)
 	        startb -= ceil(dragincyu)
 	    } else dragincyu = 0
@@ -845,17 +895,17 @@ function control_draw() {
 
 	marker_pos = median(0, marker_pos, enda + totalcols)
 	a = floor(marker_pos * 32 - starta * 32)
-	draw_sprite(spr_marker, 0 + 6 * (theme = 2 || blackout), x1 + 2 + a, y1 + 2)
-	draw_sprite_ext(spr_marker, 1 + 6 * (theme = 2 || blackout), x1 + 2 + a, y1 + 2, 1, totalrows * 2 + 10, 0, -1, 1)
+	draw_sprite(spr_marker, 0 + 6 * (theme = 2 || blackout) + 8 * (fdark && theme = 3 && !blackout), x1 + 2 + a, y1 + 2)
+	draw_sprite_ext(spr_marker, 1 + 6 * (theme = 2 || blackout) + 8 * (fdark && theme = 3 && !blackout), x1 + 2 + a, y1 + 2, 1, totalrows * 2 + 10, 0, -1, 1)
 
 
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	if (!fullscreen) {
 		draw_set_color(15790320)
 		if (theme = 1) draw_set_color(13160660)
 		if (theme = 2) draw_set_color(c_dark)
-		if (theme = 3) draw_set_color(c_white)
+		if (theme = 3) draw_set_color(15987699)
+		if (theme = 3 && fdark) draw_set_color(2105376)
 		draw_rectangle(0, 0, x1, rh, 0)
 		draw_rectangle(0, 0, rw, y1, 0)
 		draw_rectangle(0, y1 + totalrows * 32 + 52, rw, rh, 0)
@@ -898,7 +948,8 @@ function control_draw() {
 	if (theme = 0) draw_set_color(15790320)
 	if (theme = 1) draw_set_color(13160660)
 	if (theme = 2) draw_set_color(c_dark)
-	if (theme = 3) draw_set_color(c_white)
+	if (theme = 3) draw_set_color(15987699)
+	if (theme = 3 && fdark) draw_set_color(2105376)
 	draw_rectangle(xx, yy, xx + 16, yy + 16, false)
 	if (draw_layericon(7 + fullscreen, xx, yy, condstr(!fullscreen, "Expand workspace", "Return"), 0, 0)) {
 		fullscreen = !fullscreen
@@ -921,10 +972,9 @@ function control_draw() {
 		if (!fullscreen && show_layers) {
 			// Name
 			m = mouse_rectangle(x1 + 10, y1 + 10, 75, 13)
-		    draw_sprite(spr_layerbox, 0 + (theme = 2) + 2 * (theme = 3), x1, y1)
+		    draw_sprite(spr_layerbox, 0 + (theme = 2) + (2 + fdark) * (theme = 3), x1, y1)
 		    popup_set(x1 + 10, y1 + 10, 75, 13, "The name for this layer")
-			draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
+			draw_theme_font(font_small)
 			prev = layername[startb + b]
 			if (theme != 3) {
 			layername[startb + b] = draw_text_edit(400 + startb + b, layername[startb + b], x1 + 11, y1 + 10, 72, 14, 1, 0)
@@ -933,7 +983,7 @@ function control_draw() {
 			}
 			if (layername[startb + b] = "") {
 		        draw_set_color(c_gray)
-				if(theme = 2) draw_set_color(make_color_rgb(160, 160, 160))
+				if(theme = 2 || (fdark && theme = 3)) draw_set_color(make_color_rgb(160, 160, 160))
 		        draw_text(x1 + 11, y1 + 10, "Layer " + string(startb + b + 1))
 		    }
 			if (prev != layername[startb + b]) changed = 1
@@ -953,13 +1003,11 @@ function control_draw() {
 				}
 		        popup_set(x1 + 90, y1 + 5, 12, 17, "Volume of this layer: " + string(a) + "%\n(Click and drag to change)")
 		        if (c) {
-		            draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
+		        draw_theme_font(font_small)
 		            draw_set_halign(fa_center)
 		            draw_text(x1 + 98, y1 + 18, string(a) + "%")
 		            draw_set_halign(fa_left)
-		            draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		            draw_theme_font(font_main)
 		            curs = cr_size_ns
 		            if (mouse_check_button_pressed(mb_left)) {
 		                window = w_dragvol
@@ -987,15 +1035,13 @@ function control_draw() {
 				if (a < 100) { stereostr = "L " + string(-(a-100)) }
 		        popup_set(x1 + 110, y1 + 5, 12, 17, "Stereo pan: " + stereostr + "\n(Click and drag to change)")
 		        if (c) {
-		            draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
+		            draw_theme_font(font_small)
 		            draw_set_halign(fa_center)
 					if a > 100 {draw_text(x1 + 116, y1 + 18, "R " + string(a-100))}
 					if a = 100 {draw_text(x1 + 116, y1 + 18, "MONO")}
 					if a < 100 {draw_text(x1 + 116, y1 + 18, "L " + string((a-100)*-1))	}
 		            draw_set_halign(fa_left)
-		            draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		            draw_theme_font(font_small)
 		            curs = cr_size_ns
 		            if (mouse_check_button_pressed(mb_left)) {
 		                window = w_dragstereo
@@ -1121,8 +1167,7 @@ function control_draw() {
 	if (!fullscreen) {
 	if (theme = 0) draw_sprite_ext(spr_tabbar, 0, 0, 0, rw, 1, 0, -1, 1)
 	tab_x = 1
-	draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
+	draw_theme_font(font_small)
 	draw_theme_color()
 	if (draw_tab("File")) {
 	    str = ""
@@ -1179,7 +1224,8 @@ function control_draw() {
 	                                inactive(selected = 0 || selection_l = 0) + "Expand selection|"+
 	                                inactive(selected = 0 || selection_l = 0) + "Compress selection|"+
 	                                inactive(selected = 0 || selection_l = 0) + "Macros...|\\||"+ "Tremolo...|"+ "Stereo...|"+ "Arpeggio...|"+ "Portamento...|"+ "Vibrato|"+ "Stagger...|"+ "Chorus|"+ "Volume LFO|"+ "Fade in|"+ "Fade out|"+ "Replace key|"+ "Set velocity...|"+ "Set panning...|"+ "Set pitch...|"+ "Reset all properties|"+ "/|-|"+
-	                                inactive(selected = 0) + "Transpose notes outside octave range")
+	                                inactive(selected = 0) + "Transpose notes outside octave range|-|"+
+									"Ctrl+Shift+I$Tempo tapper")
 	}
 	if (draw_tab("Settings")) {
 	    str = ""
@@ -1214,9 +1260,9 @@ function control_draw() {
 	draw_sprite_ext(spr_iconbar, 1, 2, 20, (rw - 4), 1, 0, -1, 1)
 	draw_sprite(spr_iconbar, 2, rw - 2, 20)
 	} else {
-	draw_sprite(spr_iconbar, 3, 0, 20)
-	draw_sprite_ext(spr_iconbar, 4, 2, 20, (rw - 4), 1, 0, -1, 1)
-	draw_sprite(spr_iconbar, 5, rw - 2, 20)
+	draw_sprite(spr_iconbar, 3 + fdark * 3, 0, 20)
+	draw_sprite_ext(spr_iconbar, 4 + fdark * 3, 2, 20, (rw - 4), 1, 0, -1, 1)
+	draw_sprite(spr_iconbar, 5 + fdark * 3, rw - 2, 20)
 	}
 	xx = 6
 	yy = 23
@@ -1327,50 +1373,46 @@ function control_draw() {
 
 	// Compatible
 	draw_separator(rw - 34, 26)
-	draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+	draw_theme_font(font_main_bold)
 	if (compatible = 1) {
 		if (theme != 3) {
 		draw_sprite(spr_minecraft, 0, rw - 30, 25)
 		draw_sprite(spr_minecraft, 0, rw - 59, 25)
 		} else {
-		draw_sprite(spr_minecraft_f, 0, rw - 30, 25)
-		draw_sprite(spr_minecraft_f, 0, rw - 59, 25)
+		draw_sprite(spr_minecraft_f, fdark * 3, rw - 30, 25)
+		draw_sprite(spr_minecraft_f, fdark * 3, rw - 59, 25)
 		}
 		draw_set_color(c_green)
 		if (theme == 2) draw_set_color(c_lime)
 		draw_text(rw - 166, 28, "Fully compatible")
 		draw_theme_color()
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		popup_set(rw - compx, 24, compx, 25, "This song is compatible with both schematics and data packs.\n(Click for more info.)")
 	} else if (compatible = 2) {
 		if (theme != 3) {
 		draw_sprite(spr_minecraft, 0, rw - 30, 25)
 		draw_sprite(spr_minecraft, 1, rw - 59, 25)
 		} else {
-		draw_sprite(spr_minecraft_f, 0, rw - 30, 25)
-		draw_sprite(spr_minecraft_f, 1, rw - 59, 25)
+		draw_sprite(spr_minecraft_f, fdark * 3, rw - 30, 25)
+		draw_sprite(spr_minecraft_f, 1 + fdark * 3, rw - 59, 25)
 		}
 		draw_set_color(c_orange)
 		draw_text(rw - 154, 28, "Data pack only")
 		draw_theme_color()
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		popup_set(rw - compx, 24, compx, 25, "This song is only compatible with data packs.\n(Click for more info.)")
 	} else {
 		if (theme != 3) {
 		draw_sprite(spr_minecraft, 2, rw - 30, 25)
 		draw_sprite(spr_minecraft, 1, rw - 59, 25)
 		} else {
-		draw_sprite(spr_minecraft_f, 2, rw - 30, 25)
-		draw_sprite(spr_minecraft_f, 1, rw - 59, 25)
+		draw_sprite(spr_minecraft_f, 2 + fdark * 3, rw - 30, 25)
+		draw_sprite(spr_minecraft_f, 1 + fdark * 3, rw - 59, 25)
 		}
 		draw_set_color(c_red)
 		draw_text(rw - 180, 28, "Resource pack only")
 		draw_theme_color()
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		popup_set(rw - compx, 24, compx, 25, "This song is compatible with data packs using a resource pack.\n(Click for more info.)")
 	}
 
@@ -1479,18 +1521,17 @@ function control_draw() {
 
 	if (!fullscreen && show_layers) {
 		// Marker position
-		draw_set_halign(fa_right)
+		if (theme != 3) draw_set_halign(fa_right)
 		draw_theme_color()
-		draw_set_font(fnt_info_med_bold)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med_bald)
-		draw_text(93, 52, time_str(marker_pos / tempo))
+		draw_theme_font(font_info_med_bold)
+		if (theme != 3) draw_text(93, 52, time_str(marker_pos / tempo))
+		else draw_text(93 - 84, 52, time_str(marker_pos / tempo))
 
 		// Song length
-		draw_set_font(fnt_small)
-		if (theme = 3) draw_set_font(fnt_segoe_small)
-		draw_text(93, 69, "/ " + time_str(enda / tempo))
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_small)
+		if (theme != 3) draw_text(93, 69, "/ " + time_str(enda / tempo))
+		else draw_text(93 - 67, 69, "/ " + time_str(enda / tempo))
+		draw_theme_font(font_main)
 
 		// Bars-beats-sixteenths
 		draw_sprite(spr_tempobox, 0, 184, 57)
@@ -1508,19 +1549,19 @@ function control_draw() {
 			draw_sprite(spr_tempobox, 1, 101, 57)
 			bpm = tempo * 15
 			draw_text(136, 60, string_format(bpm, 4, 2) + " BPM")
-			popup_set(108, 57, 64, 22, "Tempo of the song (measured in beats per minute).\nClick and drag to change. Right click to reset.")
+			popup_set(108, 57, 64, 22, "Tempo of the song (measured in beats per minute).\nClick to change. Right click to reset.")
 		} else {
 			draw_sprite(spr_tempobox, 0, 108, 57)
 			draw_text(136, 60, string_format(tempo, 4, 2) + " t / s")
-			popup_set(108, 57, 64, 22, "Tempo of the song (measured in ticks per second).\nClick and drag to change. Right click to reset.")
+			popup_set(108, 57, 64, 22, "Tempo of the song (measured in ticks per second).\nClick to change. Right click to reset.")
 		}
 		draw_set_halign(fa_left)
 		a = mouse_rectangle(108, 57, 64, 22)
 		if (a && window = 0) {
-		    curs = cr_size_ns
-		    if (mouse_check_button(mb_left)) {
-		        tempodrag = tempo
-		        window = w_dragtempo
+		    curs = cr_handpoint
+		    if (mouse_check_button_released(mb_left)) {
+		        //tempodrag = tempo
+		        window = w_settempo
 		    }
 		    if (mouse_check_button_pressed(mb_right)) tempo = 10
 		}
@@ -1569,6 +1610,7 @@ function control_draw() {
 	}
 	if (window = w_releasemouse && !mouse_check_button(mb_left)) window = 0
 	draw_windows()
+	if (showmsg) draw_msg()
 
 	// Draw update progress bar
 	if (update == 4) {
@@ -1580,6 +1622,6 @@ function control_draw() {
 	mouse_xprev = mouse_x
 	mouse_yprev = mouse_y
 
-
+	
 
 }

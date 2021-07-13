@@ -1,5 +1,6 @@
 function draw_window_songinfo() {
 	// draw_window_songinfo()
+	if (theme = 3) draw_set_alpha(windowalpha)
 	var x1, y1, a, b, n, str, w, h, yy, w1, w2, w3, w4, w5, w6, col, r, g, b, str2, cut;
 	with (obj_popup) instance_destroy()
 	global.popup = 0
@@ -14,28 +15,22 @@ function draw_window_songinfo() {
 	str[1] = song_author
 	str[2] = song_orauthor
 	str[3] = song_midi
-	draw_set_font(fnt_info_big)
-		if (theme = 3) draw_set_font(fnt_segoe_info_big)
+	draw_theme_font(font_info_big)
 	w = max(string_width(str[0]) + 32, 400)
-	draw_set_font(fnt_info_med_bold)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med_bald)
+	draw_theme_font(font_info_med_bold)
 	w2 = string_width(str[1])
 	w4 = string_width(str[2])
-	draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+	draw_theme_font(font_main_bold)
 	w6 = string_width(str[3])
-	draw_set_font(fnt_info_med)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med)
+	draw_theme_font(font_info_med)
 	w1 = string_width("Created by ")
 	w3 = string_width("Originally created by ")
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	w5 = string_width("Imported from ")
 	w = max(w1 + w2 + 32, w)
 	w = max(w3 + w4 + 32, w)
 	w = max(w5 + w6 + 32, w)
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	var songdescwrap, songdeschei;
 	songdescwrap = string_word_wrap(song_desc, 216)
 	songdeschei = string_height(songdescwrap)
@@ -55,55 +50,47 @@ function draw_window_songinfo() {
 	y1 = floor(rh / 2 - h / 2)
 	draw_window(x1, y1, x1 + w, y1 + h)
 
-	draw_set_font(fnt_info_big)
-		if (theme = 3) draw_set_font(fnt_segoe_info_big)
+	draw_theme_font(font_info_big)
 	draw_set_halign(fa_center)
 	draw_theme_color()
 	draw_text(x1 + floor(w / 2) + 1, y1 + 16 + 1, str[0])
 	draw_set_color(col[0])
 	draw_text(x1 + floor(w / 2), y1 + 16, str[0])
-	draw_set_font(fnt_info_med)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med)
+	draw_theme_font(font_info_med)
 	draw_theme_color()
 	yy = y1 + 16
 	if (song_author != "") {
 	    yy += 32
 	    draw_text(x1 + floor(w / 2 - w2 / 2), yy, "Created by ")
-	    draw_set_font(fnt_info_med_bold)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med_bald)
+	    draw_theme_font(font_info_med_bold)
 	    draw_text(x1 + floor(w / 2 + w1 / 2) + 1, yy + 1, str[1])
 	    draw_set_color(col[1])
 	    draw_text(x1 + floor(w / 2 + w1 / 2), yy, str[1])
-	    if (song_orauthor != "") {
-	        yy += 20
-	        draw_set_font(fnt_info_med)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med)
-	        draw_theme_color()
-	        draw_text(x1 + floor(w / 2 - w4 / 2), yy, "Originally created by ")
-	        draw_set_font(fnt_info_med_bold)
-		if (theme = 3) draw_set_font(fnt_segoe_info_med_bald)
-	        draw_text(x1 + floor(w / 2 + w3 / 2) + 1, yy + 1, str[2])
-	        draw_set_color(col[2])
-	        draw_text(x1 + floor(w / 2 + w3 / 2), yy, str[2])
-	    }
 	}
+	if (song_orauthor != "") {
+	    yy += 20
+		if (song_author = "") yy += 12
+	    draw_theme_font(font_info_med)
+	    draw_theme_color()
+	    draw_text(x1 + floor(w / 2 - w4 / 2), yy, "Originally created by ")
+	    draw_theme_font(font_info_med_bold)
+	    draw_text(x1 + floor(w / 2 + w3 / 2) + 1, yy + 1, str[2])
+	    draw_set_color(col[2])
+	    draw_text(x1 + floor(w / 2 + w3 / 2), yy, str[2])
+	}
+	
 	draw_theme_color()
 	if (song_midi != "") {
-	    draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	    draw_theme_font(font_main)
 		a = string_width("Imported from ")
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		b = string_width(song_midi)
-		draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+		draw_theme_font(font_main_bold)
 		draw_text(x1 + floor(w / 2 + a / 2), y1 + h - 34 - 32 * (window = w_songinfoedit), string(song_midi))
-		draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+		draw_theme_font(font_main)
 		draw_text(x1 + floor(w / 2 - b / 2), y1 + h - 34 - 32 * (window = w_songinfoedit), "Imported from ")
 	}
-	draw_set_font(fnt_main) 
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 	draw_text(x1 + floor(w / 2), y1 + h - 20 - 32 * (window = w_songinfoedit), condstr(window = w_songinfo, "Click anywhere to dismiss") + condstr(window = w_songinfoedit, "This message is shown when the file is opened."))
 	draw_set_halign(fa_left)
 	if (song_desc != "") {
@@ -122,11 +109,47 @@ function draw_window_songinfo() {
 
 	if (window = w_songinfoedit) {
 	    if (draw_button2(x1 + floor(w / 2) - 70, y1 + h - 30, 70, "Edit")) window = w_properties
-	    if (draw_button2(x1 + floor(w / 2) + 5, y1 + h - 30, 70, "OK")) window = 0
+	    if (draw_button2(x1 + floor(w / 2) + 5, y1 + h - 30, 70, "OK") && windowopen = 1) windowclose = 1
 	} else {
 	    if (mouse_check_button_pressed(mb_left)) window = w_releasemouse
 	}
-
+	window_set_cursor(cr_default)
+	if (windowopen = 0 && theme = 3) {
+		if (windowalpha < 1) {
+			if (refreshrate = 0) windowalpha += 1/3.75
+			else if (refreshrate = 1) windowalpha += 1/7.5
+			else if (refreshrate = 2) windowalpha += 1/15
+			else if (refreshrate = 3) windowalpha += 1/18
+			else windowalpha += 1/20
+		} else {
+			windowalpha = 1
+			windowopen = 1
+		}
+	}
+	if(theme = 3) {
+		if (windowclose = 1) {
+			if (windowalpha > 0) {
+				if (refreshrate = 0) windowalpha -= 1/3.75
+				else if (refreshrate = 1) windowalpha -= 1/7.5
+				else if (refreshrate = 2) windowalpha -= 1/15
+				else if (refreshrate = 3) windowalpha -= 1/18
+				else windowalpha -= 1/20
+			} else {
+				windowalpha = 0
+				windowclose = 0
+				windowopen = 0
+				window = 0
+				window_set_cursor(curs)
+				save_settings()
+			}
+		}
+	} else {
+		if (windowclose = 1) {
+			windowclose = 0
+			window = 0
+		}
+	}
+	draw_set_alpha(1)
 
 
 }

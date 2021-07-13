@@ -1,7 +1,8 @@
 function macros() {
-#macro gm_runtime_version "2.2.3.344"
-#macro version_date "2021.01.04"
-#macro version "3.8.2"
+#macro gm_runtime_version "2.3.2.426"
+#macro version_date "2021.07.13"
+#macro version "3.9.0"
+#macro snapshot 1
 #macro nbs_version 5
 #macro pat_version 1
 
@@ -80,11 +81,19 @@ function macros() {
 #macro w_setvelocity 37
 #macro w_setpanning 38
 #macro w_setpitch 39
+#macro w_settempo 43
+#macro w_tempotapper 44
 
 #macro br "\r\n"
 
 #macro c_dark 1644825
 
-
+#macro font_main 1
+#macro font_main_bold 2
+#macro font_small 3
+#macro font_small_bold 4
+#macro font_info_big 5
+#macro font_info_med 6
+#macro font_info_med_bold 7
 
 }

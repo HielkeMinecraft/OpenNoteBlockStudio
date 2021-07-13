@@ -1,31 +1,28 @@
 function draw_window_branch_export() {
 	// draw_window_branch_export()
 	var x1, y1, a, b, c, d, str, nsel, tabs, tabstr, tabw, tabtip, menun, menua, menub, block, c1, c2;
+	if (theme = 3) draw_set_alpha(windowalpha)
 	curs = cr_default
 	x1 = floor(rw / 2 - 275)
 	y1 = floor(rh / 2 - 200)
 	draw_window(x1, y1, x1 + 550, y1 + 400)
 	if (theme = 3){
 	draw_set_color(13421772)
+	if (fdark) draw_set_color(3355443)
 	draw_rectangle(x1+1,y1+1,x1+548,y1+48,0)
 	draw_set_color(c_black)
+	draw_theme_color()
 	}
-	draw_set_font(fnt_mainbold)
-		if (theme = 3) draw_set_font(fnt_segoe_bold)
+	draw_theme_font(font_main_bold)
 	draw_text(x1 + 8, y1 + 8, "Branch Export")
-	draw_set_font(fnt_main)
-		if (theme = 3) draw_set_font(fnt_segoe)
+	draw_theme_font(font_main)
 
 	b = 8
 	str[0] = "Design"
 	str[1] = "Blocks"
 	nsel = -1
 	menun = -1
-	if (theme != 3) {
-	if (draw_checkbox(x1 + 12, y1 + 374, sch_br_remember, "Remember changes", "Whether to use these settings the\nnext time you export a branch.") && wmenu = 0) sch_br_remember=!sch_br_remember
-	} else {
-	if (draw_switch(x1 + 12, y1 + 374, sch_br_remember, "Remember changes", "Whether to use these settings the\nnext time you export a branch.") && wmenu = 0) sch_br_remember=!sch_br_remember
-	}
+	if (draw_checkbox(x1 + 12, y1 + 374, sch_br_remember, "Remember changes", "Whether to use these settings the\nnext time you export a branch.", false, true) && wmenu = 0) sch_br_remember=!sch_br_remember
 
 	if (theme = 1) draw_window(x1 + 4, y1 + 45, x1 + 496 + 50, y1 + 364)
 	for (a = 0; a < 2; a += 1) {
@@ -34,9 +31,9 @@ function draw_window_branch_export() {
 	        stabx = b - 2
 	        stabw = string_width(str[a]) + 15
 	    } else {
-	        draw_sprite(spr_tabbuttons, 0 + 3 * c + 6 * theme, x1 + b, y1 + 28)
-	        draw_sprite_ext(spr_tabbuttons, 1 + 3 * c + 6 * theme, x1 + b + 2, y1 + 28, string_width(str[a]) / 2 + 4, 1, 0, -1, 1)
-	        draw_sprite(spr_tabbuttons, 2 + 3 * c + 6 * theme, x1 + b + string_width(str[a]) + 10, y1 + 28)
+	        draw_sprite(spr_tabbuttons, 0 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b, y1 + 28)
+	        draw_sprite_ext(spr_tabbuttons, 1 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b + 2, y1 + 28, string_width(str[a]) / 2 + 4, 1, 0, -1, 1)
+	        draw_sprite(spr_tabbuttons, 2 + 3 * c + 6 * theme + 9 * (fdark && theme = 3), x1 + b + string_width(str[a]) + 10, y1 + 28)
 	        draw_text(x1 + b + 6, y1 + 30, str[a])
 	    }
 	    if (mouse_check_button_pressed(mb_left) && c && wmenu = 0) nsel = a
@@ -48,6 +45,8 @@ function draw_window_branch_export() {
 	    draw_set_color(make_color_rgb(137, 140, 149))
 	    if (theme != 3) draw_rectangle(x1 + 6, y1 + 46, x1 + 494 + 50, y1 + 362, 1)
 	    draw_set_color(c_white)
+		if (theme = 3) draw_set_color(15987699)
+		if (theme = 3 && fdark) draw_set_color(2105376)
 		if (theme != 3) {
 	    draw_rectangle(x1 + stabx, y1 + 26, x1 + stabx + stabw, y1 + 26 + 20, 0)
 		} else {
@@ -56,6 +55,8 @@ function draw_window_branch_export() {
 	    draw_set_color(make_color_rgb(137, 140, 149))
 	    if (theme != 3) draw_rectangle(x1 + stabx, y1 + 26, x1 + stabx + stabw, y1 + 26 + 20, 1)
 	    draw_set_color(c_white)
+		if (theme = 3) draw_set_color(15987699)
+		if (theme = 3 && fdark) draw_set_color(2105376)
 	    draw_rectangle(x1 + stabx + 1, y1 + 46, x1 + stabx + stabw - 1, y1 + 47, 0)
 	    draw_theme_color()
 	    draw_text(x1 + stabx + 8, y1 + 28, str[selected_tab_sch])
@@ -109,18 +110,10 @@ function draw_window_branch_export() {
 		} else {
 			draw_text(x1 + 260, y1 + 280, "None")
 		}
-		if (theme != 3) {
-	    if (draw_checkbox(x1 + 170, y1 + 300, sch_exp_velocity, "Enable velocity", "Whether to position the note blocks differently due to their velocity.\nIt's recommended that each layer's velocity should be the same when polyphony is higher than 1.")) sch_exp_velocity=!sch_exp_velocity
-		} else {
-		if (draw_switch(x1 + 170, y1 + 300, sch_exp_velocity, "Enable velocity", "Whether to position the note blocks differently due to their velocity.\nIt's recommended that each layer's velocity should be the same when polyphony is higher than 1.")) sch_exp_velocity=!sch_exp_velocity
-		}
+	    if (draw_checkbox(x1 + 170, y1 + 300, sch_exp_velocity, "Enable velocity", "Whether to position the note blocks differently due to their velocity.\nIt's recommended that each layer's velocity should be the same when polyphony is higher than 1.", false, true)) sch_exp_velocity=!sch_exp_velocity
 		if sch_exp_velocity = 1 var schwidth = 35 else schwidth = 1
 		if sch_exp_polyphony > 1 && sch_exp_velocity = 0 var schwidth = 3
-		if (theme != 3) {
-	    if (draw_checkbox(x1 + 170, y1 + 320, sch_exp_circuitry, "Export circuitry", "Whether to export the ground, repeaters, and redstone.")) sch_exp_circuitry=!sch_exp_circuitry
-		} else {
-		if (draw_switch(x1 + 170, y1 + 320, sch_exp_circuitry, "Export circuitry", "Whether to export the ground, repeaters, and redstone.")) sch_exp_circuitry=!sch_exp_circuitry
-		}
+	    if (draw_checkbox(x1 + 170, y1 + 320, sch_exp_circuitry, "Export circuitry", "Whether to export the ground, repeaters, and redstone.", true, true)) sch_exp_circuitry=!sch_exp_circuitry
 		draw_text(x1 + 380, y1 + 240 + 16, "Size:")
 	    draw_set_halign(fa_right)
 	    draw_text(x1 + 520, y1 + 240 + 16, string(enda * 2 + 4) + "x" + string(2) + "x" + string(schwidth))
@@ -172,7 +165,7 @@ function draw_window_branch_export() {
 	    draw_scrollbar(sch_exp_scrollbar, x1 + 524, y1 + 71, 17, 9, ds_list_size(instrument_list), 0, 1)
 	    xx = x1 + 524 + 16
 	    for (a = tabs - 1; a >= 0; a -= 1) {
-	        draw_window(xx - tabw[a], y1 + 51, xx, y1 + 51 + 20)
+	        draw_window(xx - tabw[a], y1 + 51, xx, y1 + 51 + 20, 1)
 	        popup_set_window(xx - tabw[a], y1 + 51, tabw[a], 20, tabtip[a])
 	        draw_text(xx - tabw[a] + 4, y1 + 54, tabstr[a])
 	        xx -= tabw[a] - 1
@@ -182,7 +175,7 @@ function draw_window_branch_export() {
 	    draw_text(x1 + 16, y1 + 300, "Block for circuitry:")
     
 	    draw_set_color(c_white)
-		if(theme = 2) draw_set_color(c_dark)
+		if(theme = 2 || (fdark && theme = 3)) draw_set_color(c_dark)
 	    draw_rectangle(x1 + 200, y1 + 265 + 30, x1 + 200 + 140, y1 + 265 + 21 + 30, 0)
 	    draw_area(x1 + 200, y1 + 265 + 30, x1 + 200 + 140, y1 + 265 + 21 + 30)
 	    if ((draw_abutton(x1 + 200 + 121, y1 + 267 + 30) || (mouse_rectangle(x1 + 200, y1 + 265 + 30, 140, 21) && mouse_check_button_pressed(mb_left))) && wmenu = 0) {
@@ -210,13 +203,16 @@ function draw_window_branch_export() {
 	        branch_export()
 	    }
 	}
-	if (draw_button2(x1 + 470 - 80 * 1, y1 + 368, 72, "Cancel") && wmenu = 0) window = 0
+	if (draw_button2(x1 + 470 - 80 * 1, y1 + 368, 72, "Cancel") && wmenu = 0 && windowopen = 1) {
+		windowclose = 1
+		selected_tab_sch = 0
+	}
 	if (draw_button2(x1 + 470 - 80 * 2, y1 + 368, 72, "Use default") && wmenu = 0) {
 	    if (question("Are you sure?", "Confirm")) reset_schematic_export(1)
 	}
 	if (wmenu = 1 && !mouse_check_button(mb_left)) wmenu = 0
 
-	draw_set_font(fnt_small)
+	draw_theme_font(font_small)
 	if (menun > -1) {
 	    if (menun = 0) {
 	        if (menub = 0) {
@@ -364,7 +360,45 @@ function draw_window_branch_export() {
 	    }
 	}
 	window_set_cursor(curs)
-
+	window_set_cursor(cr_default)
+	if (windowopen = 0 && theme = 3) {
+		if (windowalpha < 1) {
+			if (refreshrate = 0) windowalpha += 1/3.75
+			else if (refreshrate = 1) windowalpha += 1/7.5
+			else if (refreshrate = 2) windowalpha += 1/15
+			else if (refreshrate = 3) windowalpha += 1/18
+			else windowalpha += 1/20
+		} else {
+			windowalpha = 1
+			windowopen = 1
+		}
+	}
+	if(theme = 3) {
+		if (windowclose = 1) {
+			if (windowalpha > 0) {
+				if (refreshrate = 0) windowalpha -= 1/3.75
+				else if (refreshrate = 1) windowalpha -= 1/7.5
+				else if (refreshrate = 2) windowalpha -= 1/15
+				else if (refreshrate = 3) windowalpha -= 1/18
+				else windowalpha -= 1/20
+			} else {
+				windowalpha = 0
+				windowclose = 0
+				windowopen = 0
+				window = 0
+				window_set_cursor(curs)
+				save_settings()
+				selected_tab_sch = 0
+			}
+		}
+	} else {
+		if (windowclose = 1) {
+			windowclose = 0
+			window = 0
+			selected_tab_sch = 0
+		}
+	}
+	draw_set_alpha(1)
 
 
 }
